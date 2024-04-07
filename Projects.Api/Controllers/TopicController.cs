@@ -1,8 +1,5 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Project.Application.Features.CustomerFeatures.Commands;
-using Project.Application.Features.CustomerFeatures.Queries;
 using Project.Application.Features.TopicFeatures.Commands;
 using Project.Application.Features.TopicFeatures.Queries;
 

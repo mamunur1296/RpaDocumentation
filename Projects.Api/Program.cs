@@ -63,6 +63,19 @@ builder.Services.AddAuthentication(x =>
 builder.Services.AddSingleton<ITokenGenerator>(new TokenGenerator(_key, _issuer, _audience, _expirtyMinutes));
 
 
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy", builder =>
+    {
+        builder
+            .WithOrigins("http://localhost:3000")
+            .AllowAnyMethod()
+            .AllowAnyHeader() // Allow any header
+            .AllowCredentials();
+    });
+});
+
 // Include Application Dependency
 builder.Services.AddApplication();
 // Include Infrastructur Dependency
@@ -78,7 +91,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseCors("CorsPolicy");
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

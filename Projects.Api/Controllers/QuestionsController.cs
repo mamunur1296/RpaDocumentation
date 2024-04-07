@@ -25,11 +25,11 @@ namespace Projects.Api.Controllers
         {
             return Ok(await _mediator.Send(new GetAllQuestionsQuery()));
         }
-        //[HttpGet("getQuestions/{id}")]
-        //public async Task<IActionResult> getCustomer(Guid id)
-        //{
-        //    return Ok(await _mediator.Send(new GetCustomerByIdQuery(id)));
-        //}
+        [HttpGet("getQuestions/{id}")]
+        public async Task<IActionResult> getCustomer(Guid id)
+        {
+            return Ok(await _mediator.Send(new GetQuestionsByIdQuery(id)));
+        }
         //[HttpGet("getCustomerByEmai/{email}")]
         //public async Task<IActionResult> getCustomerByEmail(string email)
         //{

@@ -1,6 +1,5 @@
-﻿using FluentValidation;
+﻿
 using Microsoft.Extensions.DependencyInjection;
-using Project.Application.Mapper;
 namespace Project.Application
 {
     public static class DependencyInjection
@@ -14,7 +13,6 @@ namespace Project.Application
                 configuration.RegisterServicesFromAssembly(assembly));
 
             //object value = services.AddValidatorsFromAssembly(assembly);
-
             return services;
         }
     }

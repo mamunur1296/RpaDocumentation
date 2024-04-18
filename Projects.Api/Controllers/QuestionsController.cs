@@ -30,11 +30,6 @@ namespace Projects.Api.Controllers
         {
             return Ok(await _mediator.Send(new GetQuestionsByIdQuery(id)));
         }
-        //[HttpGet("getCustomerByEmai/{email}")]
-        //public async Task<IActionResult> getCustomerByEmail(string email)
-        //{
-        //    return Ok(await _mediator.Send(new GetCustomerByEmailQuery(email)));
-        //}
         [HttpDelete("DeleteQuestions/{id}")]
         public async Task<IActionResult> DeleteCustomer(Guid id)
         {

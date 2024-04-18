@@ -1,10 +1,8 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Project.Application.Features.ChapterFeatures.Commands;
 using Project.Application.Features.ChapterFeatures.Queries;
-using Project.Application.Features.TopicFeatures.Commands;
-using Project.Application.Features.TopicFeatures.Queries;
+
 
 namespace Projects.Api.Controllers
 {
@@ -27,6 +25,25 @@ namespace Projects.Api.Controllers
         public async Task<IActionResult> getAllCustomer()
         {
             return Ok(await _mediator.Send(new GetAllChapterQuery()));
+        }
+        [HttpGet("getChapter/{id}")]
+        public async Task<IActionResult> getCustomer(Guid id)
+        {
+            return Ok(await _mediator.Send(new GetChapterByIdQuery(id)));
+        }
+        [HttpDelete("DeleteChapter/{id}")]
+        public async Task<IActionResult> DeleteCustomer(Guid id)
+        {
+            return Ok(await _mediator.Send(new DeleteChapterCommand(id)));
+        }
+        [HttpPut("UpdateChapter/{id}")]
+        public async Task<IActionResult> Update(Guid id, UpdateChapterCommand commend)
+        {
+            if (id != commend.Id)
+            {
+                return BadRequest();
+            }
+            return Ok(await _mediator.Send(commend));
         }
     }
 }

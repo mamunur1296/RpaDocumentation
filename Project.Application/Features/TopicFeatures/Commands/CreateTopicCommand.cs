@@ -1,12 +1,7 @@
 ﻿using MediatR;
-using Project.Application.Features.QuestionsFeatures.Commands;
 using Project.Domain.Abstractions;
 using Project.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Project.Application.Features.TopicFeatures.Commands
 {
@@ -36,6 +31,7 @@ namespace Project.Application.Features.TopicFeatures.Commands
                     title = request.title,
                     Chapterid=request.Chapterid,
                     Id = new Guid(),
+                    
                 };
                 await _unitOfWorkDb.topicCommandRepository.AddAsync(questions);
                 await _unitOfWorkDb.SaveAsync();

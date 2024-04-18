@@ -1,19 +1,14 @@
 ﻿using AutoMapper;
 using MediatR;
-using Project.Application.Features.QuestionsFeatures.Commands;
 using Project.Domain.Abstractions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Project.Application.Features.TopicFeatures.Commands
 {
     public class UpdateTopicCommand : IRequest<string>
     {
         public string title { get; set; }
-        public string answers { get; set; }
+        public Guid Chapterid { get; set; }
         public UpdateTopicCommand(Guid id)
         {
             Id = id;
@@ -40,6 +35,7 @@ namespace Project.Application.Features.TopicFeatures.Commands
                 else
                 {
                     data.title = request.title;
+                    data.Chapterid=request.Chapterid;
                 }
                 await _unitOfWorkDb.topicCommandRepository.UpdateAsync(data);
                 await _unitOfWorkDb.SaveAsync();

@@ -13,6 +13,7 @@ namespace Project.Application.Features.QuestionsFeatures.Commands
     {
         public string title { get; set; }
         public string answers { get; set; }
+        public Guid TopicId { get; set; }
         public UpdateQuestionsCommand(Guid id)
         {
             Id = id;
@@ -42,6 +43,7 @@ namespace Project.Application.Features.QuestionsFeatures.Commands
                 {
                     data.title = request.title;
                     data.answers = request.answers;
+                    data.TopicId = request.TopicId;
                 }
                 await _unitOfWorkDb.questionCommandRepository.UpdateAsync(data);
                 await _unitOfWorkDb.SaveAsync();

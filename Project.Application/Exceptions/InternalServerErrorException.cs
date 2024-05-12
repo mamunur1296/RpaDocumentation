@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Project.Application.Exceptions
 {
-    public class ForbiddenAccessException : Exception
+    public class InternalServerErrorException : Exception
     {
-        public ForbiddenAccessException(string message) : base(message) { }
+        public InternalServerErrorException(string message) : base(message) { }
     }
 }

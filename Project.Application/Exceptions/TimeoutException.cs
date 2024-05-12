@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Project.Application.Exceptions
 {
-    public class ForbiddenAccessException : Exception
+    public class Timeout_Exceptio : Exception
     {
-        public ForbiddenAccessException(string message) : base(message) { }
+        public Timeout_Exceptio(string message) : base(message) { }
     }
 }

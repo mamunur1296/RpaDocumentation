@@ -7,7 +7,7 @@ namespace Project.Application.Exceptions
     public class ValidationException : Exception
     {
         public ValidationException()
-            : base("One or more validation failures have occurred.")
+            : base("One or more validation failures have occurred 1 .")
         {
             Errors = new Dictionary<string, string[]>();
         }

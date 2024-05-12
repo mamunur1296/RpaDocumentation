@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Project.Application.Exceptions
 {
-    public class ForbiddenAccessException : Exception
+    public class UnauthorizedException : Exception
     {
-        public ForbiddenAccessException(string message) : base(message) { }
+        public UnauthorizedException(string message) : base(message) { }
     }
 }

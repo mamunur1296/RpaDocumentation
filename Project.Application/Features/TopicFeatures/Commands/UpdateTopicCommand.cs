@@ -1,23 +1,20 @@
 ﻿using AutoMapper;
 using MediatR;
+using Project.Application.Response;
 using Project.Domain.Abstractions;
+using System.Net;
 
 
 namespace Project.Application.Features.TopicFeatures.Commands
 {
-    public class UpdateTopicCommand : IRequest<string>
+    public class UpdateTopicCommand : IRequest<Response<string>>
     {
+        public Guid Id { get;  set; }
         public string title { get; set; }
         public Guid Chapterid { get; set; }
-        public UpdateTopicCommand(Guid id)
-        {
-            Id = id;
-        }
-
-        public Guid Id { get; private set; }
 
     }
-    public class UpdateTopicHandler : IRequestHandler<UpdateTopicCommand, string>
+    public class UpdateTopicHandler : IRequestHandler<UpdateTopicCommand, Response<string>>
     {
         private readonly IUnitOfWorkDb _unitOfWorkDb;
         private readonly IMapper _mapper;
@@ -26,26 +23,49 @@ namespace Project.Application.Features.TopicFeatures.Commands
             _unitOfWorkDb = unitOfWorkDb;
             _mapper = mapper;
         }
-        public async Task<string> Handle(UpdateTopicCommand request, CancellationToken cancellationToken)
+        public async Task<Response<string>> Handle(UpdateTopicCommand request, CancellationToken cancellationToken)
         {
+            var response = new Response<string>();
+
             try
             {
-                var data = await _unitOfWorkDb.topicQueryRepository.GetByIdAsync(request.Id);
-                if (data == null) return default;
-                else
-                {
-                    data.title = request.title;
-                    data.Chapterid=request.Chapterid;
-                }
-                await _unitOfWorkDb.topicCommandRepository.UpdateAsync(data);
-                await _unitOfWorkDb.SaveAsync();
-                return "Successfully upddate";
-            }
-            catch (Exception)
-            {
+                // Retrieve the Topic by ID
+                var Topic = await _unitOfWorkDb.topicQueryRepository.GetByIdAsync(request.Id);
 
-                throw;
+                if (Topic == null)
+                {
+                    response.Success = false;
+                    response.Data = null;
+                    response.ErrorMessage = $"Topic with ID = {request.Id} not found";
+                    response.StatusCode = HttpStatusCode.NotFound;
+                    return response;
+                }
+
+                // Update Topic properties
+                Topic.Modified_By = "Admin"; // Ideally, this should be dynamic
+                Topic.ModifiedDate = DateTime.Now;
+                Topic.title = request.title;
+                Topic.Chapterid = request.Chapterid;
+
+                // Perform update operation
+                await _unitOfWorkDb.topicCommandRepository.UpdateAsync(Topic);
+                await _unitOfWorkDb.SaveAsync();
+
+                // Set successful response
+                response.Success = true;
+                response.Data = $"Topic with ID = {Topic.Id} updated successfully";
+                response.StatusCode = HttpStatusCode.OK;
             }
+            catch (Exception ex)
+            {
+                // Set failure response with detailed error message
+                response.Success = false;
+                response.Data = null; // Setting Data to null since there's an error
+                response.ErrorMessage = $"An error occurred while updating the Topic. Please try again later. Error: {ex.Message}";
+                response.StatusCode = HttpStatusCode.InternalServerError;
+            }
+
+            return response;
         }
     }
 }

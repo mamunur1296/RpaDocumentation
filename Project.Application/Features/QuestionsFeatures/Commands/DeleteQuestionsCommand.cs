@@ -1,10 +1,12 @@
 ﻿using MediatR;
+using Project.Application.Response;
 using Project.Domain.Abstractions;
+using System.Net;
 
 
 namespace Project.Application.Features.QuestionsFeatures.Commands
 {
-    public class DeleteQuestionsCommand : IRequest<string>
+    public class DeleteQuestionsCommand : IRequest<Response<string>>
     {
         public DeleteQuestionsCommand(Guid id)
         {
@@ -13,7 +15,7 @@ namespace Project.Application.Features.QuestionsFeatures.Commands
 
         public Guid Id { get; private set; }
     }
-    public class DeleteQuestionsHandler : IRequestHandler<DeleteQuestionsCommand, string>
+    public class DeleteQuestionsHandler : IRequestHandler<DeleteQuestionsCommand, Response<string>>
     {
         private readonly IUnitOfWorkDb _unitOfWorkDb;
 
@@ -23,24 +25,43 @@ namespace Project.Application.Features.QuestionsFeatures.Commands
         }
 
 
-        public async Task<string> Handle(DeleteQuestionsCommand request, CancellationToken cancellationToken)
+        public async Task<Response<string>> Handle(DeleteQuestionsCommand request, CancellationToken cancellationToken)
         {
+            var response = new Response<string>();
+
+            // Retrieve the Questions by ID
+            var Questions = await _unitOfWorkDb.questionQueryRepository.GetByIdAsync(request.Id);
+
+            if (Questions == null)
+            {
+                response.Success = false;
+                response.Data = null;
+                response.ErrorMessage = $"Questions with ID = {request.Id} not found";
+                response.StatusCode = HttpStatusCode.NotFound;
+                return response;
+            }
+
             try
             {
-                var date = await _unitOfWorkDb.questionQueryRepository.GetByIdAsync(request.Id);
-                if (date == null)
-                {
-                    return "Data not found";
-                }
-                await _unitOfWorkDb.questionCommandRepository.DeleteAsync(date);
+                // Delete the Questions
+                await _unitOfWorkDb.questionCommandRepository.DeleteAsync(Questions);
                 await _unitOfWorkDb.SaveAsync();
-                return "Completed";
-            }
-            catch (Exception)
-            {
 
-                throw;
+                // Set successful response
+                response.Success = true;
+                response.Data = $"Questions with ID = {Questions.Id} deleted successfully";
+                response.StatusCode = HttpStatusCode.OK;
             }
+            catch (Exception ex)
+            {
+                // Set failure response with detailed error message
+                response.Success = false;
+                response.Data = null; // Setting Data to null since there's an error
+                response.ErrorMessage = $"An error occurred while deleting the Questions. Please try again later. Error: {ex.Message}";
+                response.StatusCode = HttpStatusCode.InternalServerError;
+            }
+
+            return response;
         }
     }
 }

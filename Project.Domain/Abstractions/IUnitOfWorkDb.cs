@@ -5,8 +5,6 @@ namespace Project.Domain.Abstractions
 {
     public interface IUnitOfWorkDb
     {
-        ICustomerCommandRepository customerCommandRepository { get; }
-        ICustomerQueryRepository customerQueryRepository { get; }
         ITopicQueryRepository topicQueryRepository { get; }
         ITopicCommandRepository topicCommandRepository { get; }
         IQuestionsCommandRepository questionCommandRepository { get; }

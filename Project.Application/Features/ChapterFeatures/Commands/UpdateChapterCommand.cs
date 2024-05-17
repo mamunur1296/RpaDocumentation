@@ -1,50 +1,68 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using MediatR;
+using Project.Application.Response;
 using Project.Domain.Abstractions;
+using System.Net;
 
 
 namespace Project.Application.Features.ChapterFeatures.Commands
 {
-    public class UpdateChapterCommand : IRequest<string>
+    public class UpdateChapterCommand : IRequest<Response<string>>
     {
+        public Guid Id { get; set; }
         public string title { get; set; }
-        public UpdateChapterCommand(Guid id)
-        {
-            Id = id;
-        }
-
-        public Guid Id { get; private set; }
 
     }
-    public class UpdateChapterHandler : IRequestHandler<UpdateChapterCommand, string>
+    public class UpdateChapterHandler : IRequestHandler<UpdateChapterCommand, Response<string>>
     {
         private readonly IUnitOfWorkDb _unitOfWorkDb;
-        private readonly IMapper _mapper;
-        public UpdateChapterHandler(IUnitOfWorkDb unitOfWorkDb, IMapper mapper)
+        public UpdateChapterHandler(IUnitOfWorkDb unitOfWorkDb)
         {
             _unitOfWorkDb = unitOfWorkDb;
-            _mapper = mapper;
         }
 
 
-        public async Task<string> Handle(UpdateChapterCommand request, CancellationToken cancellationToken)
+        public async Task<Response<string>> Handle(UpdateChapterCommand request, CancellationToken cancellationToken)
         {
+            var response = new Response<string>();
+
             try
             {
-                var data = await _unitOfWorkDb.chapterQueryRepository.GetByIdAsync(request.Id);
-                if (data == null) return default;
-                else
+                // Retrieve the chapter by ID
+                var chapter = await _unitOfWorkDb.chapterQueryRepository.GetByIdAsync(request.Id);
+
+                if (chapter == null)
                 {
-                    data.title = request.title;
+                    response.Success = false;
+                    response.Data = null;
+                    response.ErrorMessage = $"chapter with ID = {request.Id} not found";
+                    response.StatusCode = HttpStatusCode.NotFound;
+                    return response;
                 }
-                await _unitOfWorkDb.chapterCommandRepository.UpdateAsync(data);
+
+                // Update chapter properties
+                chapter.ModifiedDate = DateTime.Now;
+                chapter.Modified_By = "Admin"; // Ideally, this should be dynamic
+                chapter.title = request.title;
+
+                // Perform update operation
+                await _unitOfWorkDb.chapterCommandRepository.UpdateAsync(chapter);
                 await _unitOfWorkDb.SaveAsync();
-                return "Successfully upddate";
+
+                // Set successful response
+                response.Success = true;
+                response.Data = $"chapter with ID = {chapter.Id} updated successfully";
+                response.StatusCode = HttpStatusCode.OK;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                // Set failure response with detailed error message
+                response.Success = false;
+                response.Data = null; // Setting Data to null since there's an error
+                response.ErrorMessage = $"An error occurred while updating the chapter. Please try again later. Error: {ex.Message}";
+                response.StatusCode = HttpStatusCode.InternalServerError;
             }
+
+            return response;
         }
     }
 }

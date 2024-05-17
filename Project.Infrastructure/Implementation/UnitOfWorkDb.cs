@@ -10,8 +10,6 @@ namespace Project.Infrastructure.Implementation
     public class UnitOfWorkDb : IUnitOfWorkDb
     {
         private readonly ApplicationDbContext _applicationDbContext;
-        public ICustomerCommandRepository customerCommandRepository { get; private set; }
-        public ICustomerQueryRepository customerQueryRepository { get; private set; }
 
         public ITopicQueryRepository topicQueryRepository { get; private set; }
 
@@ -28,8 +26,6 @@ namespace Project.Infrastructure.Implementation
         public UnitOfWorkDb(ApplicationDbContext applicationDbContext)
         {
             _applicationDbContext = applicationDbContext;
-            customerCommandRepository = new CustomerCommandRepository(applicationDbContext);
-            customerQueryRepository = new CustomerQueryRepository(applicationDbContext);
             topicCommandRepository = new TopicCommandRepository(applicationDbContext);
             topicQueryRepository = new TopicQueryRepository(applicationDbContext);
             questionCommandRepository = new QuestionsCommandRepository(applicationDbContext);

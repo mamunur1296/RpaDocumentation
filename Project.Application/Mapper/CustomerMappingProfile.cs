@@ -8,7 +8,6 @@ namespace Project.Application.Mapper
     {
         public CustomerMappingProfile() 
         {
-            CreateMap<Customer, CustomerDTO>().ReverseMap();
             CreateMap<Questions, QuestionsDTO>().ReverseMap();
             CreateMap<Topic, TopicDTO>().ReverseMap();
             CreateMap<Chapter, ChapterDTO>().ReverseMap();

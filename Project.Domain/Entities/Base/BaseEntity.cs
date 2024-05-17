@@ -7,10 +7,9 @@ namespace Project.Domain.Entities.Base
         [Key]
         public Guid Id { get; set; }
         public DateTime CreatedDate { get; set; }
-        public DateTime ModifiedDate { get; private set; }
-        public BaseEntity() 
-        {
-            ModifiedDate = DateTime.Now;
-        }
+        public DateTime ModifiedDate { get;  set; }
+        public string? Created_By { get; set; }
+        public string? Modified_By { get; set; }
+        
     }
 }

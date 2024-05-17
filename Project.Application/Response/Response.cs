@@ -13,19 +13,5 @@ namespace Project.Application.Response
         {
             Success = true;
         }
-
-        public void SetupSuccessResponse(Response<string> response, Guid customerId,string message)
-        {
-            response.Data = message;
-            response.Success = true;
-            response.StatusCode = HttpStatusCode.OK;
-        }
-
-        public void SetupFailureResponse(Response<string> response, HttpStatusCode statusCode, string errorMessage)
-        {
-            response.Success = false;
-            response.StatusCode = statusCode;
-            response.ErrorMessage = errorMessage;
-        }
     }
 }

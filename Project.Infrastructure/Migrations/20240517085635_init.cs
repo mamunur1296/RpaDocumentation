@@ -186,12 +186,6 @@ namespace Project.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_tipics", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_tipics_chapters_Chapterid",
-                        column: x => x.Chapterid,
-                        principalTable: "chapters",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -211,17 +205,6 @@ namespace Project.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_questions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_questions_chapters_ChapterId",
-                        column: x => x.ChapterId,
-                        principalTable: "chapters",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_questions_tipics_TopicId",
-                        column: x => x.TopicId,
-                        principalTable: "tipics",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(

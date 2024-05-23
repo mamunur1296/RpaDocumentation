@@ -1,14 +1,13 @@
 ﻿using AutoMapper;
 using MediatR;
 using Project.Application.DTOs;
-using Project.Application.Response;
+using Project.Application.Exceptions;
 using Project.Domain.Abstractions;
-using System.Net;
 
 
 namespace Project.Application.Features.QuestionsFeatures.Queries
 {
-    public class GetQuestionsByIdQuery : IRequest<Response<QuestionsDTO>>
+    public class GetQuestionsByIdQuery : IRequest<QuestionsDTO>
     {
         public GetQuestionsByIdQuery(Guid id)
         {
@@ -18,7 +17,7 @@ namespace Project.Application.Features.QuestionsFeatures.Queries
         public Guid Id { get; private set; }
     }
 
-    public class GetQuestionsByIdHandler : IRequestHandler<GetQuestionsByIdQuery, Response<QuestionsDTO>>
+    public class GetQuestionsByIdHandler : IRequestHandler<GetQuestionsByIdQuery, QuestionsDTO>
     {
         private readonly IUnitOfWorkDb _unitOfWorkDb;
         private readonly IMapper _mapper;
@@ -27,7 +26,7 @@ namespace Project.Application.Features.QuestionsFeatures.Queries
             _unitOfWorkDb = unitOfWorkDb;
             _mapper = mapper;
         }
-        public async Task<Response<QuestionsDTO>> Handle(GetQuestionsByIdQuery request, CancellationToken cancellationToken)
+        public async Task<QuestionsDTO> Handle(GetQuestionsByIdQuery request, CancellationToken cancellationToken)
         {
             try
             {
@@ -37,36 +36,19 @@ namespace Project.Application.Features.QuestionsFeatures.Queries
                 // Check if the Questions was found
                 if (Questions == null)
                 {
-                    return new Response<QuestionsDTO>
-                    {
-                        Data = null,
-                        Success = false,
-                        StatusCode = HttpStatusCode.NotFound,
-                        ErrorMessage = $"Questions with ID = {request.Id} not found"
-                    };
+                    throw new NotFoundException("No Questions found.");
                 }
 
                 // Map the Questions to a DTO
                 var QuestionsDto = _mapper.Map<QuestionsDTO>(Questions);
 
                 // Create a successful response
-                return new Response<QuestionsDTO>
-                {
-                    Data = QuestionsDto,
-                    Success = true,
-                    StatusCode = HttpStatusCode.OK
-                };
+                return QuestionsDto;
             }
             catch (Exception ex)
             {
                 // Return a failure response with detailed error message
-                return new Response<QuestionsDTO>
-                {
-                    Data = null,
-                    Success = false,
-                    StatusCode = HttpStatusCode.InternalServerError,
-                    ErrorMessage = $"An error occurred while retrieving the Questions. Please try again later. Error: {ex.Message}"
-                };
+                throw new Exception($"An error occurred while retrieving Questions: {ex.Message}", ex);
             }
         }
     }

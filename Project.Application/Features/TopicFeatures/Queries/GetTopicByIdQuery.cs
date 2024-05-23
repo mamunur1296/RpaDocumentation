@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
 using Project.Application.DTOs;
+using Project.Application.Exceptions;
 using Project.Application.Response;
 using Project.Domain.Abstractions;
 using System.Net;
@@ -8,7 +9,7 @@ using System.Net;
 
 namespace Project.Application.Features.TopicFeatures.Queries
 {
-    public class GetTopicByIdQuery : IRequest<Response<TopicDTO>>
+    public class GetTopicByIdQuery : IRequest<TopicDTO>
     {
         public GetTopicByIdQuery(Guid id)
         {
@@ -18,7 +19,7 @@ namespace Project.Application.Features.TopicFeatures.Queries
         public Guid Id { get; private set; }
     }
 
-    public class GetTopicByIdHandler : IRequestHandler<GetTopicByIdQuery, Response<TopicDTO>>
+    public class GetTopicByIdHandler : IRequestHandler<GetTopicByIdQuery, TopicDTO>
     {
         private readonly IUnitOfWorkDb _unitOfWorkDb;
         private readonly IMapper _mapper;
@@ -27,7 +28,7 @@ namespace Project.Application.Features.TopicFeatures.Queries
             _unitOfWorkDb = unitOfWorkDb;
             _mapper = mapper;
         }
-        public async Task<Response<TopicDTO>> Handle(GetTopicByIdQuery request, CancellationToken cancellationToken)
+        public async Task<TopicDTO> Handle(GetTopicByIdQuery request, CancellationToken cancellationToken)
         {
             try
             {
@@ -37,36 +38,19 @@ namespace Project.Application.Features.TopicFeatures.Queries
                 // Check if the Topic was found
                 if (Topic == null)
                 {
-                    return new Response<TopicDTO>
-                    {
-                        Data = null,
-                        Success = false,
-                        StatusCode = HttpStatusCode.NotFound,
-                        ErrorMessage = $"Topic with ID = {request.Id} not found"
-                    };
+                    throw new NotFoundException("No Topic found.");
                 }
 
                 // Map the Topic to a DTO
                 var TopicDto = _mapper.Map<TopicDTO>(Topic);
 
                 // Create a successful response
-                return new Response<TopicDTO>
-                {
-                    Data = TopicDto,
-                    Success = true,
-                    StatusCode = HttpStatusCode.OK
-                };
+                return TopicDto;
             }
             catch (Exception ex)
             {
                 // Return a failure response with detailed error message
-                return new Response<TopicDTO>
-                {
-                    Data = null,
-                    Success = false,
-                    StatusCode = HttpStatusCode.InternalServerError,
-                    ErrorMessage = $"An error occurred while retrieving the Topic. Please try again later. Error: {ex.Message}"
-                };
+                throw new Exception($"An error occurred while retrieving Topics: {ex.Message}", ex);
             }
         }
     }

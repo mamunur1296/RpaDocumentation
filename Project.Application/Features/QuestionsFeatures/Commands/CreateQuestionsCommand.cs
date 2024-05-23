@@ -12,6 +12,7 @@ namespace Project.Application.Features.QuestionsFeatures.Commands
         public string title { get; set; }
         public string answers { get; set; }
         public Guid TopicId { get; set; }
+        public Guid chapterId { get; set; }
     }
     public class CreateQuestionsHandler : IRequestHandler<CreateQuestionsCommand, Response<string>>
     {
@@ -37,6 +38,7 @@ namespace Project.Application.Features.QuestionsFeatures.Commands
                     title=request.title,
                     answers=request.answers,
                     TopicId=request.TopicId,
+                    chapterId=request.chapterId,
                 };
 
                 // Add the new Questions to the repository
@@ -48,7 +50,7 @@ namespace Project.Application.Features.QuestionsFeatures.Commands
                 // Set successful response
                 response.Success = true;
                 response.Data = $"Questions with ID = {questions.Id} created successfully!";
-                response.StatusCode = HttpStatusCode.OK;
+                response.Status  = HttpStatusCode.OK;
             }
             catch (Exception ex)
             {
@@ -56,7 +58,7 @@ namespace Project.Application.Features.QuestionsFeatures.Commands
                 response.Success = false;
                 response.Data = null; // Setting Data to null since there's an error
                 response.ErrorMessage = $"An error occurred while creating the Questions. Please try again later. Error: {ex.Message}";
-                response.StatusCode = HttpStatusCode.InternalServerError;
+                response.Status = HttpStatusCode.InternalServerError;
             }
 
             return response;

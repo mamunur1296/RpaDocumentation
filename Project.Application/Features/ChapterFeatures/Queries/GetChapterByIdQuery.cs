@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
 using Project.Application.DTOs;
+using Project.Application.Exceptions;
 using Project.Application.Response;
 using Project.Domain.Abstractions;
 using System.Net;
@@ -8,7 +9,7 @@ using System.Net;
 
 namespace Project.Application.Features.ChapterFeatures.Queries
 {
-    public class GetChapterByIdQuery : IRequest<Response<ChapterDTO>>
+    public class GetChapterByIdQuery : IRequest<ChapterDTO>
     {
         public GetChapterByIdQuery(Guid id)
         {
@@ -18,7 +19,7 @@ namespace Project.Application.Features.ChapterFeatures.Queries
         public Guid Id { get; private set; }
     }
 
-    public class GetChapterByIdHandler : IRequestHandler<GetChapterByIdQuery, Response<ChapterDTO>>
+    public class GetChapterByIdHandler : IRequestHandler<GetChapterByIdQuery, ChapterDTO>
     {
         private readonly IUnitOfWorkDb _unitOfWorkDb;
         private readonly IMapper _mapper;
@@ -27,7 +28,7 @@ namespace Project.Application.Features.ChapterFeatures.Queries
             _unitOfWorkDb = unitOfWorkDb;
             _mapper = mapper;
         }
-        public async Task<Response<ChapterDTO>> Handle(GetChapterByIdQuery request, CancellationToken cancellationToken)
+        public async Task<ChapterDTO> Handle(GetChapterByIdQuery request, CancellationToken cancellationToken)
         {
 
             try
@@ -38,36 +39,19 @@ namespace Project.Application.Features.ChapterFeatures.Queries
                 // Check if the Chapter was found
                 if (chapter == null)
                 {
-                    return new Response<ChapterDTO>
-                    {
-                        Data = null,
-                        Success = false,
-                        StatusCode = HttpStatusCode.NotFound,
-                        ErrorMessage = $"Chapter with ID = {request.Id} not found"
-                    };
+                    throw new NotFoundException("No chapter found.");
                 }
 
                 // Map the Chapter to a DTO
                 var chapterDto = _mapper.Map<ChapterDTO>(chapter);
 
                 // Create a successful response
-                return new Response<ChapterDTO>
-                {
-                    Data = chapterDto,
-                    Success = true,
-                    StatusCode = HttpStatusCode.OK
-                };
+                return chapterDto;
             }
             catch (Exception ex)
             {
                 // Return a failure response with detailed error message
-                return new Response<ChapterDTO>
-                {
-                    Data = null,
-                    Success = false,
-                    StatusCode = HttpStatusCode.InternalServerError,
-                    ErrorMessage = $"An error occurred while retrieving the Chapter. Please try again later. Error: {ex.Message}"
-                };
+                throw new Exception($"An error occurred while retrieving chapters: {ex.Message}", ex);
             }
         }
     }

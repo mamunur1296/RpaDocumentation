@@ -37,7 +37,7 @@ namespace Project.Application.Features.TopicFeatures.Commands
                     response.Success = false;
                     response.Data = null;
                     response.ErrorMessage = $"Topic with ID = {request.Id} not found";
-                    response.StatusCode = HttpStatusCode.NotFound;
+                    response.Status = HttpStatusCode.NotFound;
                     return response;
                 }
 
@@ -54,7 +54,7 @@ namespace Project.Application.Features.TopicFeatures.Commands
                 // Set successful response
                 response.Success = true;
                 response.Data = $"Topic with ID = {Topic.Id} updated successfully";
-                response.StatusCode = HttpStatusCode.OK;
+                response.Status = HttpStatusCode.OK;
             }
             catch (Exception ex)
             {
@@ -62,7 +62,7 @@ namespace Project.Application.Features.TopicFeatures.Commands
                 response.Success = false;
                 response.Data = null; // Setting Data to null since there's an error
                 response.ErrorMessage = $"An error occurred while updating the Topic. Please try again later. Error: {ex.Message}";
-                response.StatusCode = HttpStatusCode.InternalServerError;
+                response.Status = HttpStatusCode.InternalServerError;
             }
 
             return response;

@@ -117,7 +117,7 @@ builder.Services.AddApplication();
 // Include Infrastructur Dependency
 builder.Services.AddInfrastructure(builder.Configuration);
 
-builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
+
 
 var app = builder.Build();
 
@@ -131,7 +131,7 @@ app.UseCors("CorsPolicy");
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
+
 app.MapControllers();
 
 app.Run();

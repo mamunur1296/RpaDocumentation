@@ -8,5 +8,6 @@ namespace Project.Domain.Entities
         public string title { get; set; }
         public string answers { get; set; }
         public Guid  TopicId { get; set; }
+        public Guid chapterId { get; set; }
     }
 }
